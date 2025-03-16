@@ -84,4 +84,9 @@ public class CarWash {
         GeneracionVehiculos generador = new GeneracionVehiculos();
         return generador.generarVehiculo();
     }
+
+    public Vehiculo statusColas()
+    {
+        return null;
+    }
 }
