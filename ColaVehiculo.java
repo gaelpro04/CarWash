@@ -36,4 +36,9 @@ public class ColaVehiculo {
     {
         return colaVehiculo.colaVacia();
     }
+
+    public void mostrarCola()
+    {
+        colaVehiculo.mostrar();
+    }
 }

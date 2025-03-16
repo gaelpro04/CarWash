@@ -5,8 +5,8 @@ public class Vehiculo {
     private boolean preferencia;
     private String marca;
     private String color;
-    private int horaLlegada;
-    private int horaSalida;
+    private String horaLlegada;
+    private String horaSalida;
 
     public Vehiculo(String tamanio, String tipoServicio, boolean preferencia, String marca, String color)
     {
@@ -15,6 +15,8 @@ public class Vehiculo {
         this.preferencia = preferencia;
         this.marca = marca;
         this.color = color;
+        horaLlegada = "0";
+        horaSalida = "0";
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -61,25 +63,26 @@ public class Vehiculo {
         this.color = color;
     }
 
-    public int getHoraLlegada() {
+    public String getHoraLlegada() {
         return horaLlegada;
     }
 
-    public int getHoraSalida() {
+    public String getHoraSalida() {
         return horaSalida;
     }
 
-    public void setHoraSalida(int horaSalida) {
+    public void setHoraSalida(String horaSalida) {
         this.horaSalida = horaSalida;
     }
 
-    public void setHoraLlegada(int horaLlegada) {
+    public void setHoraLlegada(String horaLlegada) {
         this.horaLlegada = horaLlegada;
     }
 
     public String toString()
     {
         return marca + " " + color + "\n" + "Tamaño: " + tamanio + "\n" + "Tipo de servicio: " + tipoServicio + "\n"
-                + "Preferencia: " + (preferencia ? "Si" : "no");
+                + "Preferencia: " + (preferencia ? "Si" : "no") + "\n" + "Hora de llegada: " + horaLlegada + "\n" +
+                "hora de salida: " + horaSalida;
     }
 }

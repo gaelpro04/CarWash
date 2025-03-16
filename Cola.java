@@ -5,7 +5,7 @@ public class Cola<T> {
 
     public Cola()
     {
-        cola = (T[]) new Object[10];
+        cola = (T[]) new Object[1000];
         inicio = -1;
         fin = -1;
     }
@@ -13,24 +13,18 @@ public class Cola<T> {
     public Cola(int MAX)
     {
         cola = (T[]) new Object[MAX];
-        inicio = 1;
+        inicio = -1;
         fin = -1;
     }
 
     public boolean colaLena()
     {
-        if (fin == cola.length - 1 && inicio == 0 || (fin+1) == inicio) {
-            return true;
-        }
-        return false;
+        return (fin + 1) % cola.length == inicio;
     }
 
     public boolean colaVacia()
     {
-        if (inicio == -1) {
-            return true;
-        }
-        return false;
+        return inicio == -1;
     }
 
     public void insertar(T object)
