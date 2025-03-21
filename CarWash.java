@@ -21,6 +21,9 @@ public class CarWash {
         acceso = new ColaVehiculo(10);
         lavado = new ColaVehiculo(3);
         aspirado = new ArrayList<>(4);
+        for (int i = 0; i < 4; ++i) {
+            aspirado.add(new ColaVehiculo(4));
+        }
         secado = new ColaVehiculo(5);
         registro = new Registro();
         horas = new int[]{8,9,10,12,1,2,3,4,5,6};
@@ -74,10 +77,18 @@ public class CarWash {
 
     public int statusColas(int hora, int minuto, int contadorNumeroGenerado)
     {
+        System.out.println("Cola de acceso llena: " + acceso.lineaLlena());
+        System.out.println("Cola de lavado llena: " + lavado.lineaLlena());
+        System.out.println("Cola de secado llena: " + secado.lineaLlena());
+
+        for (ColaVehiculo aspiradoInd : aspirado) {
+            System.out.println("Cola aspirado llena: " + aspiradoInd.lineaLlena());
+        }
+
+
         int contadorTiempo = statusAcceso(hora, minuto, contadorNumeroGenerado);
 
         statusLavadoIncersion(hora, minuto);
-        statusLavadoEliminacion(hora, minuto);
 
         statusAspiradoIncersion(hora, minuto);
         statusAspiradoEliminacion(hora, minuto);
@@ -118,7 +129,7 @@ public class CarWash {
                 } else {
                     acceso.insertar(vehiculo);
                 }
-
+                System.out.println("Se metió un vehiculo a acceso");
                 System.out.println(vehiculo);
                 this.numeroGenerado = rd.nextInt(7) + 2;
                 contadorNumeroGenerado = 0;
@@ -138,12 +149,12 @@ public class CarWash {
             Vehiculo vehiculo = acceso.peek();
             boolean siHayEspacio = false;
 
-            if (vehiculo.getTipoServicio().equals("Aspirado")) {
+            if (vehiculo.getTipoServicio().equals("Aspirado") && !lavado.lineaLlena()) {
 
                 //Meter contadores de cantidad de espacios disponibles para poder meter leugo al de menor cantidad de
                 //autos metidos
-                for (ColaVehiculo aspirado : aspirado) {
-                    if (!aspirado.lineaLlena()) {
+                for (ColaVehiculo aspiradoInd : aspirado) {
+                    if (!aspiradoInd.lineaLlena()) {
                         siHayEspacio = true;
                         break;
                     }
@@ -156,26 +167,82 @@ public class CarWash {
                     vehiculo.setHoraLlegadaInt(minuto);
                     acceso.eliminar();
                     lavado.insertar(vehiculo);
+                    System.out.println("Se metió un vehiculo a lavado por aspirado");
                 } else {
-                    System.out.println("No hay espacio en el servicio solicitado");
+                    System.out.println("No hay espacio en el servicio solicitado aspirado");
                 }
             } else {
                 if (!secado.lineaLlena()) {
-
+                    vehiculo.setHoraSalidaInt(minuto);
+                    vehiculo.setHoraSalida(generarHoraString(hora,minuto));
+                    vehiculo.setHoraLlegada(generarHoraString(hora,minuto));
+                    vehiculo.setHoraLlegadaInt(minuto);
+                    acceso.eliminar();
+                    lavado.insertar(vehiculo);
+                    System.out.println("Se metió un vehiculoa a lavado por secadora");
                 } else {
-
+                    System.out.println("No hay espacio en el servicio solicitado secado");
                 }
             }
         }
     }
 
-    public void statusLavadoEliminacion(int hora, int minuto)
-    {
-
-    }
-
     public void statusAspiradoIncersion(int hora, int minuto)
     {
+        if (!lavado.lineaVacia()) {
+            Vehiculo vehiculo = lavado.peek();
+            int contadorMenosCarros = 4;
+            int indiceMenosCarros = 0;
+            boolean siHayEspacio = false;
+
+            if (vehiculo.getTipoServicio().equals("Aspirado") && (minuto - vehiculo.getHoraLlegadaInt() == 3)) {
+
+                //Ciclo para saber que cola tiene menos elementos
+                for (int i = 0; i < 4; ++i) {
+                    ColaVehiculo aspiradoInd = new ColaVehiculo(4);
+                    int contadorInterno = 0;
+
+                    for (int j = 0; j < 4; ++j) {
+                        if (!aspirado.get(i).lineaVacia()) {
+                            aspiradoInd.insertar(aspirado.get(i).eliminar());
+                            ++contadorInterno;
+                        } else {
+                            break;
+                        }
+                    }
+                    for (int j = 0; j < 4; ++j) {
+                        if (!aspiradoInd.lineaVacia()) {
+                            aspirado.get(i).insertar(aspiradoInd.eliminar());
+                        } else {
+                            break;
+                        }
+                    }
+                    if (contadorMenosCarros > contadorInterno) {
+                        contadorMenosCarros = contadorInterno;
+                        indiceMenosCarros = i;
+                    }
+                }
+
+                vehiculo.setHoraSalidaInt(minuto);
+                vehiculo.setHoraSalida(generarHoraString(hora,minuto));
+                vehiculo.setHoraLlegada(generarHoraString(hora,minuto));
+                vehiculo.setHoraLlegadaInt(minuto);
+                lavado.eliminar();
+                System.out.println("Se metió un vehiculo a aspirado");
+                aspirado.get(indiceMenosCarros).insertar(vehiculo);
+
+
+            } else if (vehiculo.getTipoServicio().equals("Secado") && vehiculo.getHoraLlegadaInt() - minuto == 3) {
+
+                vehiculo.setHoraSalidaInt(minuto);
+                vehiculo.setHoraSalida(generarHoraString(hora,minuto));
+                vehiculo.setHoraLlegada(generarHoraString(hora,minuto));
+                vehiculo.setHoraLlegadaInt(minuto);
+                lavado.eliminar();
+                System.out.println("Se metió un vehiculo a secado");
+                secado.insertar(vehiculo);
+            }
+        }
 
     }
 
