@@ -41,4 +41,9 @@ public class ColaVehiculo {
     {
         colaVehiculo.mostrar();
     }
+
+    public int lineaTamanio()
+    {
+        return colaVehiculo.tamanio();
+    }
 }

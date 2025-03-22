@@ -84,4 +84,17 @@ public class Cola<T> {
             System.out.println();
         }
     }
+
+    public int tamanio()
+    {
+        if (colaVacia()) {
+            return 0;
+        }
+
+        if (fin >= inicio) {
+            return fin - inicio + 1;
+        } else {
+            return cola.length - inicio + fin + 1;
+        }
+    }
 }

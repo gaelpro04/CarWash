@@ -4,7 +4,7 @@ public class Registro {
 
     public Registro()
     {
-        vehiculosRegistrados = new ColaVehiculo();
+        vehiculosRegistrados = new ColaVehiculo(100000000);
     }
 
     public void guardarVehiculo(Vehiculo vehiculo)
