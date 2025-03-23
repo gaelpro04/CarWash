@@ -11,7 +11,7 @@ public class GeneracionVehiculos {
 
     public GeneracionVehiculos()
     {
-        color = new String[]{"Azul", "Verde", "Rojo", "Amarillo", "Blanco", "Negro", "Gris", "Naranja"};
+        color = new String[]{"Azul", "Verde", "Rojo", "Amarillo", "Blanco", "Rosa", "Gris", "Naranja"};
         marca = new String[]{"Honda", "Toyota", "Sentra", "Chevrolet", "Kia", "Ford", "Hyundai", "Mitsubishi"};
         tamanio = new String[]{"Pequeño", "Mediano", "Grande"};
         tipoServicio = new String[]{"Aspirado", "Secado"};

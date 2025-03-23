@@ -13,6 +13,7 @@ public class CarWash {
     private int[] horas;
     private int numeroGenerado;
     private int contadorDeNumeroGenerado;
+    private int aceleracion;
 
     /**
      * Constructor preterminado
@@ -30,58 +31,7 @@ public class CarWash {
         horas = new int[]{8,9,10,12,1,2,3,4,5,6,7,8};
         numeroGenerado = 0;
         contadorDeNumeroGenerado = 0;
-    }
-
-    /**
-     * Método que permite simular el car wash automatizado
-     */
-    public void iniciarSimulacion()
-    {
-
-        //Ciclos anidados y Threads que hacen posible la simulación.
-        //Primer ciclo corresponde a horas(que en realidad son minutos en la simulacion)
-        //Segundo ciclo corresponde a minutos(que en realdia son soegundos en la simulacion)
-        //Luego el Thread de 1000 milisegundos que corresponde a un segundo.
-        int max = 10;
-        for (int i = 0; i < max; ++i) {
-            System.out.println(generarHoraString(i,0));
-
-
-            for (int j = 0; j < 60; ++j) {
-                if (j != 0) {
-                    System.out.println(generarHoraString(i,j));
-                }
-
-                try {
-                    Thread.sleep(1000);
-
-                    boolean lineaEstado = false;
-
-                    for (ColaVehiculo aspiradoInd : aspirado) {
-
-                        if (!aspiradoInd.lineaVacia()) {
-                            lineaEstado = true;
-                            break;
-                        }
-                    }
-                    if (i == (max-1) && j == 59 && (!acceso.lineaVacia() || !lavado.lineaVacia() || !secado.lineaVacia() || lineaEstado)) {
-                        statusColas(i,j,false);
-                        ++max;
-                    } else if ( i == 9 && j >= 44) {
-                        statusColas(i,j,false);
-                    } else if (i > 9) {
-                        statusColas(i,j,false);
-                    } else {
-                        statusColas(i,j,true);
-                    }
-                    imprimirColasCorto(j);
-
-
-                } catch (InterruptedException e) {
-                    System.out.println("Error en hilo del segundo: " + (j+1));
-                }
-            }
-        }
+        aceleracion = 1000;
     }
 
     private Vehiculo generarVehiculo()
@@ -90,7 +40,7 @@ public class CarWash {
         return generador.generarVehiculo();
     }
 
-    private void statusColas(int hora, int minuto, boolean accesoBol)
+    public void statusColas(int hora, int minuto, boolean accesoBol)
     {
         if (accesoBol) {
             statusAcceso(hora, minuto);
@@ -136,14 +86,14 @@ public class CarWash {
                     acceso.insertar(vehiculo);
                 }
 
-                this.numeroGenerado = rd.nextInt(4) + 2;
+                this.numeroGenerado = rd.nextInt(1) + 1;
                 contadorDeNumeroGenerado = 0;
             } else {
                 System.out.println("No hay acceso");
             }
         } else {
             if (numeroGenerado == 0) {
-                this.numeroGenerado = rd.nextInt(4) + 2;
+                this.numeroGenerado = rd.nextInt(1) + 1;
             }
             ++contadorDeNumeroGenerado;
         }
@@ -304,7 +254,7 @@ public class CarWash {
     }
 
 
-    private String generarHoraString(int i, int j)
+    public String generarHoraString(int i, int j)
     {
         return horas[i] + ":" + (j < 10 ? "0" + j : j) + (i >= 12 ? " pm" : " am");
     }
@@ -333,7 +283,7 @@ public class CarWash {
         System.out.println();
     }
 
-    private void imprimirColasCorto(int minuto)
+    public void imprimirColasCorto(int minuto)
     {
         System.out.println("Cola de acceso cantidad: " + acceso.lineaTamanio());
         System.out.println("Cola de lavado cantidad: " + lavado.lineaTamanio() + " Tiempo: " + (lavado.lineaVacia() ? "vacio" : lavado.peek().getHoraLlegadaInt()) + " Minuto: " + minuto);
@@ -411,5 +361,11 @@ public class CarWash {
         this.contadorDeNumeroGenerado = contadorDeNumeroGenerado;
     }
 
+    public int getAceleracion() {
+        return aceleracion;
+    }
 
+    public void setAceleracion(int aceleracion) {
+        this.aceleracion = aceleracion;
+    }
 }

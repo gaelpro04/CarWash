@@ -21,6 +21,9 @@ public class CarWashGUI {
     private CarWash carWash;
 
     public CarWashGUI() {
+
+        carWash = new CarWash();
+
         frame = new JFrame("Car Wash");
         frame.setLayout(new BorderLayout());
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -48,7 +51,7 @@ public class CarWashGUI {
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
         botonAceleracion = new JButton("Acelerar");
-        botonAceleracion.addActionListener(lectura -> botonAceleracion());
+        botonAceleracion.addActionListener(_ -> botonAceleracion());
         botonAceleracion.setFocusPainted(false);
         botonAceleracion.setPreferredSize(new Dimension(90,20));
         botonAceleracion.setOpaque(true);
@@ -174,6 +177,59 @@ public class CarWashGUI {
         frame.pack();
     }
 
+
+    /**
+     * Método que permite simular el car wash automatizado
+     */
+    public void iniciarSimulacion()
+    {
+
+        //Ciclos anidados y Threads que hacen posible la simulación.
+        //Primer ciclo corresponde a horas(que en realidad son minutos en la simulacion)
+        //Segundo ciclo corresponde a minutos(que en realdia son soegundos en la simulacion)
+        //Luego el Thread de 1000 milisegundos que corresponde a un segundo.
+        int max = 10;
+        for (int i = 0; i < max; ++i) {
+            labelTiempo.setText(carWash.generarHoraString(i,0));
+
+            for (int j = 0; j < 60; ++j) {
+                if (j != 0) {
+                    labelTiempo.setText(carWash.generarHoraString(i,j));
+                }
+
+                try {
+                    Thread.sleep(carWash.getAceleracion());
+
+                    boolean lineaEstado = false;
+
+                    for (ColaVehiculo aspiradoInd : carWash.getAspirado()) {
+
+                        if (!aspiradoInd.lineaVacia()) {
+                            lineaEstado = true;
+                            break;
+                        }
+                    }
+                    if (i == (max-1) && j == 59 && (!carWash.getAcceso().lineaVacia() || !carWash.getLavado().lineaVacia() || !carWash.getSecado().lineaVacia() || lineaEstado)) {
+                        carWash.statusColas(i,j,false);
+                        ++max;
+                    } else if ( i == 9 && j >= 44) {
+                        carWash.statusColas(i,j,false);
+                    } else if (i > 9) {
+                        carWash.statusColas(i,j,false);
+                    } else {
+                        carWash.statusColas(i,j,true);
+                    }
+                    carWash.imprimirColasCorto(j);
+                    actualizaColasGraficas();
+
+
+                } catch (InterruptedException e) {
+                    System.out.println("Error en hilo del segundo: " + (j+1));
+                }
+            }
+        }
+    }
+
     private void generadorElementoVehiculoFrame()
     {
 
@@ -181,6 +237,85 @@ public class CarWashGUI {
 
     private void botonAceleracion()
     {
+        if (carWash.getAceleracion() == 100) {
+            carWash.setAceleracion(1000);
+        } else {
+            carWash.setAceleracion(carWash.getAceleracion() - 100);
+        }
+        System.out.println(carWash.getAceleracion());
+    }
 
+    private void actualizaColasGraficas()
+    {
+        //Se obtiene las colas de la clase lógica del carWash
+        ColaVehiculo acceso = carWash.getAcceso();
+        ColaVehiculo lavado = carWash.getLavado();
+        ColaVehiculo secado = carWash.getSecado();
+        ArrayList<ColaVehiculo> aspirado = carWash.getAspirado();
+
+        //Colas temporales donde se podrán mover los elementos y mostrarlos en los JLabels
+        ColaVehiculo accesoTemp = new ColaVehiculo(10);
+        ColaVehiculo lavadoTemp = new ColaVehiculo(3);
+        ColaVehiculo secadoTemp = new ColaVehiculo(5);
+        ArrayList<ColaVehiculo> aspiradoTemp = new ArrayList<>(4);
+        for (int i = 0; i < 4; ++i) {
+            aspiradoTemp.add(new ColaVehiculo(4));
+        }
+
+        for (int i = this.acceso.size()-1; i >= 0; --i) {
+
+            if (!acceso.lineaVacia()) {
+                Vehiculo vehiculoTemp = acceso.peek();
+                Vehiculo vehiculoClon = new Vehiculo(vehiculoTemp.getTamanio(), vehiculoTemp.getTipoServicio(), vehiculoTemp.isPreferencia(), vehiculoTemp.getMarca(), vehiculoTemp.getColor());
+
+                JLabel labelActual = this.acceso.get(i);
+                System.out.println("INDICE: " + i);
+                labelActual.setFont(new Font("Arial", Font.BOLD,10));
+                labelActual.setText("<html>" + vehiculoClon.getMarca() + "<br>" + vehiculoClon.getTamanio() + "<br>" + "Pref: " + vehiculoClon.isPreferencia() + "</html>");
+                labelActual.setBackground(asignarColor(vehiculoClon.getColor()));
+                accesoTemp.insertar(acceso.eliminar());
+            } else {
+                JLabel labelActual = this.acceso.get(i);
+                labelActual.setFont(new Font("Arial", Font.BOLD,12));
+                labelActual.setText(String.valueOf(i));
+                labelActual.setBackground(Color.WHITE);
+            }
+
+        }
+
+        while (!accesoTemp.lineaVacia()) {
+            acceso.insertar(accesoTemp.eliminar());
+        }
+        panelIzquierdo.repaint();
+        panelIzquierdo.revalidate();
+    }
+
+    private Color asignarColor(String colorS)
+    {
+        Color color = null;
+        switch (colorS) {
+            case "Azul":
+                color = Color.BLUE;
+                break;
+            case "Verde":
+                color = Color.GREEN;
+                break;
+            case "Rojo":
+                color = Color.RED;
+                break;
+            case "Blanco":
+                color = Color.WHITE;
+                break;
+            case "Morado":
+                color = Color.PINK;
+                break;
+            case "gris":
+                color = Color.GRAY;
+                break;
+            case "Naranja":
+                color = Color.ORANGE;
+                break;
+        }
+        return color;
     }
 }
