@@ -16,4 +16,19 @@ public class Registro {
     {
         return vehiculosRegistrados.eliminar();
     }
+
+    public int lineaTamanio()
+    {
+        return vehiculosRegistrados.lineaTamanio();
+    }
+
+    public boolean lineaVacia()
+    {
+        return vehiculosRegistrados.lineaVacia();
+    }
+
+    public boolean lineaLlena()
+    {
+        return vehiculosRegistrados.lineaLlena();
+    }
 }

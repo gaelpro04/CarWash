@@ -1,3 +1,4 @@
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -256,7 +257,7 @@ public class CarWash {
 
     public String generarHoraString(int i, int j)
     {
-        return horas[i] + ":" + (j < 10 ? "0" + j : j) + (i >= 12 ? " pm" : " am");
+        return horas[i] + ":" + (j < 10 ? "0" + j : j) + (i >= 3 ? " pm" : " am");
     }
 
     private void imprimirEstadoColas(int minuto)

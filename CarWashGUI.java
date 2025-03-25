@@ -13,7 +13,7 @@ public class CarWashGUI {
     private JFrame frame;
     private JPanel panelIzquierdo, panelCentral, panelDerecho;
     private JPanel panelAcceso, panelLavado, panelAspiradoSecado, panelControl;
-    private JLabel labelTiempo;
+    private JLabel labelTiempo, labelTituloAcceso, labelTituloLavado, labelTituloServicio;
     private JButton botonAceleracion;
     private ArrayList<JLabel> lavado, acceso, secado;
     private ArrayList<ArrayList<JLabel>> aspirado;
@@ -59,7 +59,7 @@ public class CarWashGUI {
 
         labelTiempo = new JLabel("8:00", SwingConstants.CENTER);
         labelTiempo.setOpaque(true);
-        labelTiempo.setPreferredSize(new Dimension(50,20));
+        labelTiempo.setPreferredSize(new Dimension(70,20));
         labelTiempo.setBackground(Color.WHITE);
 
         acceso = new ArrayList<>(10);
@@ -152,17 +152,17 @@ public class CarWashGUI {
         panelControl.add(botonAceleracion);
 
 
-        JLabel labelTituloAcceso = new JLabel("Cola de espera", SwingConstants.CENTER);
+        labelTituloAcceso = new JLabel("Cola de espera", SwingConstants.CENTER);
         labelTituloAcceso.setFont(new Font("Arial", Font.BOLD, 20));
         panelIzquierdo.add(labelTituloAcceso, BorderLayout.NORTH);
         panelIzquierdo.add(panelAcceso, BorderLayout.CENTER);
 
-        JLabel labelTituloLavado = new JLabel("Lavado", SwingConstants.CENTER);
+        labelTituloLavado = new JLabel("Lavado", SwingConstants.CENTER);
         labelTituloLavado.setFont(new Font("Arial", Font.BOLD, 20));
         panelCentral.add(labelTituloLavado, BorderLayout.NORTH);
         panelCentral.add(panelLavado, BorderLayout.CENTER);
 
-        JLabel labelTituloServicio = new JLabel("Secado y aspirado", SwingConstants.CENTER);
+        labelTituloServicio = new JLabel("Secado y aspirado", SwingConstants.CENTER);
         labelTituloServicio.setFont(new Font("Arial", Font.BOLD, 20));
         panelDerecho.add(labelTituloServicio, BorderLayout.NORTH);
         panelDerecho.add(panelAspiradoSecado, BorderLayout.CENTER);
@@ -209,12 +209,15 @@ public class CarWashGUI {
                             break;
                         }
                     }
-                    if (i == (max-1) && j == 59 && (!carWash.getAcceso().lineaVacia() || !carWash.getLavado().lineaVacia() || !carWash.getSecado().lineaVacia() || lineaEstado)) {
+
+                    if (i >= 9 && (carWash.getAcceso().lineaVacia() && carWash.getLavado().lineaVacia() && carWash.getSecado().lineaVacia() && !lineaEstado)) {
+                        break;
+                    } else if (i == (max-1) && j == 59 && (!carWash.getAcceso().lineaVacia() || !carWash.getLavado().lineaVacia() || !carWash.getSecado().lineaVacia() || lineaEstado)) {
                         carWash.statusColas(i,j,false);
                         ++max;
-                    } else if ( i == 9 && j >= 44) {
+                    } else if ( i == 8 && j >= 44) {
                         carWash.statusColas(i,j,false);
-                    } else if (i > 9) {
+                    } else if (i > 8) {
                         carWash.statusColas(i,j,false);
                     } else {
                         carWash.statusColas(i,j,true);
@@ -227,7 +230,20 @@ public class CarWashGUI {
                     System.out.println("Error en hilo del segundo: " + (j+1));
                 }
             }
+            boolean lineaEstado = false;
+            for (ColaVehiculo aspiradoInd : carWash.getAspirado()) {
+
+                if (!aspiradoInd.lineaVacia()) {
+                    lineaEstado = true;
+                    break;
+                }
+            }
+            if (i >= 9 && (carWash.getAcceso().lineaVacia() && carWash.getLavado().lineaVacia() && carWash.getSecado().lineaVacia() && !lineaEstado)) {
+                break;
+            }
         }
+        registroGrafico();
+
     }
 
     private void generadorElementoVehiculoFrame()
@@ -288,6 +304,119 @@ public class CarWashGUI {
         }
         panelIzquierdo.repaint();
         panelIzquierdo.revalidate();
+
+        for (int i = this.lavado.size()-1; i >= 0; --i) {
+
+            if (!lavado.lineaVacia()) {
+                Vehiculo vehiculoTemp = lavado.peek();
+                Vehiculo vehiculoClon =  new Vehiculo(vehiculoTemp.getTamanio(), vehiculoTemp.getTipoServicio(), vehiculoTemp.isPreferencia(), vehiculoTemp.getMarca(), vehiculoTemp.getColor());
+
+                JLabel labelActual = this.lavado.get(i);
+                labelActual.setFont(new Font("Arial", Font.BOLD,10));
+                labelActual.setText("<html>" + vehiculoClon.getMarca() + "<br>" + vehiculoClon.getTamanio() + "<br>" + "Pref: " + vehiculoClon.isPreferencia() + "</html>");
+                labelActual.setBackground(asignarColor(vehiculoClon.getColor()));
+                lavadoTemp.insertar(lavado.eliminar());
+            } else {
+                JLabel labelActual = this.lavado.get(i);
+                labelActual.setFont(new Font("Arial", Font.BOLD,12));
+                labelActual.setText(String.valueOf(i));
+                labelActual.setBackground(Color.WHITE);
+            }
+        }
+
+        while (!lavadoTemp.lineaVacia()) {
+            lavado.insertar(lavadoTemp.eliminar());
+        }
+        panelCentral.repaint();
+        panelCentral.revalidate();
+
+        for (int i = this.secado.size()-1; i >= 0; --i) {
+
+            if (!secado.lineaVacia()) {
+                Vehiculo vehiculoTemp = secado.peek();
+                Vehiculo vehiculoClon =  new Vehiculo(vehiculoTemp.getTamanio(), vehiculoTemp.getTipoServicio(), vehiculoTemp.isPreferencia(), vehiculoTemp.getMarca(), vehiculoTemp.getColor());
+
+                JLabel labelActual = this.secado.get(i);
+                labelActual.setFont(new Font("Arial", Font.BOLD,10));
+                labelActual.setText("<html>" + vehiculoClon.getMarca() + "<br>" + vehiculoClon.getTamanio() + "<br>" + "Pref: " + vehiculoClon.isPreferencia() + "</html>");
+                labelActual.setBackground(asignarColor(vehiculoClon.getColor()));
+                secadoTemp.insertar(secado.eliminar());
+            } else {
+                JLabel labelActual = this.secado.get(i);
+                labelActual.setFont(new Font("Arial", Font.BOLD,12));
+                labelActual.setText(String.valueOf(i));
+                labelActual.setBackground(Color.WHITE);
+            }
+        }
+        while (!secadoTemp.lineaVacia()) {
+            secado.insertar(secadoTemp.eliminar());
+        }
+        panelDerecho.repaint();
+        panelDerecho.revalidate();
+
+        for (int i = this.aspirado.size()-1; i >= 0; --i) {
+
+            ArrayList<JLabel> aspiradoIndLabel = this.aspirado.get(i);
+
+            for (int j = aspiradoIndLabel.size()-1; j>= 0; --j) {
+
+                if (!aspirado.get(i).lineaVacia()) {
+                    Vehiculo vehiculoTemp = aspirado.get(i).peek();
+                    Vehiculo vehiculoClon =  new Vehiculo(vehiculoTemp.getTamanio(), vehiculoTemp.getTipoServicio(), vehiculoTemp.isPreferencia(), vehiculoTemp.getMarca(), vehiculoTemp.getColor());
+
+                    JLabel labelActual = aspiradoIndLabel.get(j);
+                    labelActual.setFont(new Font("Arial", Font.BOLD,10));
+                    labelActual.setText("<html>" + vehiculoClon.getMarca() + "<br>" + vehiculoClon.getTamanio() + "<br>" + "Pref: " + vehiculoClon.isPreferencia() + "</html>");
+                    labelActual.setBackground(asignarColor(vehiculoClon.getColor()));
+                    aspiradoTemp.get(i).insertar(aspirado.get(i).eliminar());
+                } else {
+                    JLabel labelActual = aspiradoIndLabel.get(j);
+                    labelActual.setFont(new Font("Arial", Font.BOLD,12));
+                    labelActual.setText(String.valueOf(j));
+                    labelActual.setBackground(Color.WHITE);
+                }
+            }
+        }
+
+        for (int i = this.aspirado.size()-1; i >= 0; --i) {
+
+            while (!aspiradoTemp.get(i).lineaVacia()) {
+                aspirado.get(i).insertar(aspiradoTemp.get(i).eliminar());
+            }
+        }
+        panelDerecho.repaint();
+        panelDerecho.revalidate();
+
+    }
+
+    private void registroGrafico()
+    {
+        JPanel panelRegistro = new JPanel();
+        panelRegistro.setLayout(new BoxLayout(panelRegistro, BoxLayout.Y_AXIS));
+        panelRegistro.setBackground(Color.white);
+
+        int tamanio = carWash.getRegistro().lineaTamanio();
+        for (int i = 0; i < tamanio; ++i) {
+            if (!carWash.getRegistro().lineaVacia()) {
+                System.out.println(i);
+                Vehiculo vehiculoTemp = carWash.getRegistro().eliminarVehiculo();
+                panelRegistro.add(new JLabel("[" + (i+1) + "] " + "Vehiculo: "  + vehiculoTemp.getMarca() + " Tipo de servicio: " + vehiculoTemp.getTipoServicio() + " Tamaño: " + vehiculoTemp.getTamanio() + " Hora salida: " + vehiculoTemp.getHoraSalida()));
+            }
+
+        }
+        System.out.println(carWash.getRegistro().lineaTamanio());
+
+        JScrollPane scrollPane = new JScrollPane(panelRegistro);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+
+        frame.getContentPane().removeAll();
+        frame.setLayout(new BorderLayout());
+        frame.add(panelControl, BorderLayout.NORTH);
+        frame.add(scrollPane, BorderLayout.CENTER);
+        frame.getContentPane().revalidate();
+        frame.getContentPane().repaint();
+
     }
 
     private Color asignarColor(String colorS)
@@ -318,4 +447,6 @@ public class CarWashGUI {
         }
         return color;
     }
+
+
 }
