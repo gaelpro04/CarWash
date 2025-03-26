@@ -12,11 +12,15 @@ public class CarWashGUI {
 
     private JFrame frame;
     private JPanel panelIzquierdo, panelCentral, panelDerecho;
-    private JPanel panelAcceso, panelLavado, panelAspiradoSecado, panelControl;
+    private JPanel panelAcceso, panelEsperaAcceso, panelLavado, panelAspiradoSecado, panelControl;
+    private JPanel panelIzquierdoEAST;
+    private JPanel panelIzquierdoWEST;
     private JLabel labelTiempo, labelTituloAcceso, labelTituloLavado, labelTituloServicio;
+    private JLabel vehiculoActual;
     private JButton botonAceleracion;
     private ArrayList<JLabel> lavado, acceso, secado;
     private ArrayList<ArrayList<JLabel>> aspirado;
+    private Color backGroundBASE;
 
     private CarWash carWash;
 
@@ -34,10 +38,12 @@ public class CarWashGUI {
         panelDerecho.setBorder(BorderFactory.createLineBorder(Color.GRAY));
         panelCentral = new JPanel(new BorderLayout());
         panelCentral.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+        backGroundBASE = panelCentral.getBackground();
 
         panelAcceso = new JPanel(new GridBagLayout());
         panelLavado = new JPanel(new GridBagLayout());
         panelAspiradoSecado = new JPanel(new GridBagLayout());
+        panelEsperaAcceso = new JPanel(new GridBagLayout());
 
         panelControl = new JPanel();
         panelControl.setLayout(new FlowLayout(FlowLayout.LEFT));
@@ -148,14 +154,35 @@ public class CarWashGUI {
             gbc.gridx = 0;
         }
 
+        gbc.gridx = 0;
+        vehiculoActual = new JLabel("0", SwingConstants.CENTER);
+        vehiculoActual.setOpaque(true);
+        vehiculoActual.setBorder(BorderFactory.createLineBorder(Color.WHITE));
+        vehiculoActual.setBackground(Color.WHITE);
+        vehiculoActual.setPreferredSize(new Dimension(60,60));
+
+        panelEsperaAcceso.add(vehiculoActual, gbc);
+
         panelControl.add(labelTiempo);
         panelControl.add(botonAceleracion);
 
+        panelIzquierdoEAST = new JPanel(new BorderLayout());
+        panelIzquierdoWEST = new JPanel(new BorderLayout());
+        panelIzquierdoWEST.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+        panelIzquierdoEAST.setBorder(BorderFactory.createLineBorder(Color.GRAY));
 
         labelTituloAcceso = new JLabel("Cola de espera", SwingConstants.CENTER);
         labelTituloAcceso.setFont(new Font("Arial", Font.BOLD, 20));
-        panelIzquierdo.add(labelTituloAcceso, BorderLayout.NORTH);
-        panelIzquierdo.add(panelAcceso, BorderLayout.CENTER);
+        panelIzquierdoEAST.add(labelTituloAcceso, BorderLayout.NORTH);
+        panelIzquierdoEAST.add(panelAcceso, BorderLayout.CENTER);
+
+        JLabel labelTituloEspera = new JLabel("En espera", SwingConstants.CENTER);
+        labelTituloEspera.setFont(new Font("Arial", Font.BOLD, 20));
+        panelIzquierdoWEST.add(labelTituloEspera, BorderLayout.NORTH);
+        panelIzquierdoWEST.add(panelEsperaAcceso, BorderLayout.CENTER);
+
+        panelIzquierdo.add(panelIzquierdoEAST, BorderLayout.EAST);
+        panelIzquierdo.add(panelIzquierdoWEST, BorderLayout.WEST);
 
         labelTituloLavado = new JLabel("Lavado", SwingConstants.CENTER);
         labelTituloLavado.setFont(new Font("Arial", Font.BOLD, 20));
@@ -291,10 +318,17 @@ public class CarWashGUI {
                 labelActual.setBackground(asignarColor(vehiculoClon.getColor()));
                 accesoTemp.insertar(acceso.eliminar());
             } else {
+
                 JLabel labelActual = this.acceso.get(i);
                 labelActual.setFont(new Font("Arial", Font.BOLD,12));
                 labelActual.setText(String.valueOf(i));
                 labelActual.setBackground(Color.WHITE);
+            }
+
+            if (accesoTemp.lineaLlena()) {
+                panelIzquierdoEAST.setBackground(new Color(255,105,97));
+            } else {
+                panelIzquierdoEAST.setBackground(backGroundBASE);
             }
 
         }
@@ -386,6 +420,24 @@ public class CarWashGUI {
         }
         panelDerecho.repaint();
         panelDerecho.revalidate();
+
+        if (carWash.getAcceso().lineaLlena()) {
+            if (carWash.getVehiculo() != null) {
+                Vehiculo vehiculoTemp = carWash.getVehiculo();
+                vehiculoActual.setFont(new Font("Arial", Font.BOLD,10));
+                vehiculoActual.setText("<html>" + vehiculoTemp.getMarca() + "<br>" + vehiculoTemp.getTamanio() + "<br>" + "Pref: " + vehiculoTemp.isPreferencia() + "</html>");
+                vehiculoActual.setBackground(asignarColor(vehiculoTemp.getColor()));
+            } else {
+                vehiculoActual.setFont(new Font("Arial", Font.BOLD,10));
+                vehiculoActual.setText("0");
+                vehiculoActual.setBackground(Color.WHITE);
+            }
+        } else {
+            vehiculoActual.setFont(new Font("Arial", Font.BOLD,10));
+            vehiculoActual.setText("0");
+            vehiculoActual.setBackground(Color.WHITE);
+        }
+
 
     }
 

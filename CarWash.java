@@ -15,6 +15,7 @@ public class CarWash {
     private int numeroGenerado;
     private int contadorDeNumeroGenerado;
     private int aceleracion;
+    private Vehiculo vehiculo;
 
     /**
      * Constructor preterminado
@@ -33,6 +34,7 @@ public class CarWash {
         numeroGenerado = 0;
         contadorDeNumeroGenerado = 0;
         aceleracion = 1000;
+        vehiculo = null;
     }
 
     private Vehiculo generarVehiculo()
@@ -45,6 +47,8 @@ public class CarWash {
     {
         if (accesoBol) {
             statusAcceso(hora, minuto);
+        } else {
+            vehiculo = null;
         }
 
         statusLavadoIncersion(hora, minuto);
@@ -69,32 +73,37 @@ public class CarWash {
     {
         Random rd = new Random();
 
+        if (contadorDeNumeroGenerado == numeroGenerado && contadorDeNumeroGenerado == 0) {
+            this.vehiculo = generarVehiculo();
+        }
+
         if (contadorDeNumeroGenerado == numeroGenerado) {
             if (!acceso.lineaLlena()) {
-                Vehiculo vehiculo = generarVehiculo();
 
-                if (vehiculo.isPreferencia()) {
+                if (this.vehiculo.isPreferencia()) {
                     ColaVehiculo colaTemp = new ColaVehiculo(10);
 
                     while (!acceso.lineaVacia()) {
                         colaTemp.insertar(acceso.eliminar());
                     }
-                    acceso.insertar(vehiculo);
+                    acceso.insertar(this.vehiculo);
                     while (!colaTemp.lineaVacia()) {
                         acceso.insertar(colaTemp.eliminar());
                     }
                 } else {
-                    acceso.insertar(vehiculo);
+                    acceso.insertar(this.vehiculo);
                 }
 
                 this.numeroGenerado = rd.nextInt(1) + 1;
                 contadorDeNumeroGenerado = 0;
+                this.vehiculo = generarVehiculo();
             } else {
                 System.out.println("No hay acceso");
             }
         } else {
             if (numeroGenerado == 0) {
                 this.numeroGenerado = rd.nextInt(1) + 1;
+                this.vehiculo = generarVehiculo();
             }
             ++contadorDeNumeroGenerado;
         }
@@ -368,5 +377,13 @@ public class CarWash {
 
     public void setAceleracion(int aceleracion) {
         this.aceleracion = aceleracion;
+    }
+
+    public Vehiculo getVehiculo() {
+        return vehiculo;
+    }
+
+    public void setVehiculo(Vehiculo vehiculo) {
+        this.vehiculo = vehiculo;
     }
 }
