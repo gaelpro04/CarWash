@@ -1,15 +1,11 @@
 import javax.swing.*;
-import javax.swing.border.LineBorder;
-import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
-import java.util.ArrayList;
-import java.util.Objects;
 import java.util.ArrayList;
 
+//Clase que modela lo gráfico de la clase Car Wash
 public class CarWashGUI {
 
+    //Atributos del frame
     private JFrame frame;
     private JPanel panelIzquierdo, panelCentral, panelDerecho;
     private JPanel panelAcceso, panelEsperaAcceso, panelLavado, panelAspiradoSecado, panelControl;
@@ -17,13 +13,18 @@ public class CarWashGUI {
     private JPanel panelIzquierdoWEST;
     private JLabel labelTiempo, labelTituloAcceso, labelTituloLavado, labelTituloServicio;
     private JLabel vehiculoActual;
-    private JButton botonAceleracion;
+    private JButton botonAceleracion, botonTerminar;
     private ArrayList<JLabel> lavado, acceso, secado;
     private ArrayList<ArrayList<JLabel>> aspirado;
     private Color backGroundBASE;
 
+    //Atributos lógicos
     private CarWash carWash;
+    private boolean terminado;
 
+    /**
+     * Constructor donde configura la interfaz y sus componentes
+     */
     public CarWashGUI() {
 
         carWash = new CarWash();
@@ -31,6 +32,7 @@ public class CarWashGUI {
         frame = new JFrame("Car Wash");
         frame.setLayout(new BorderLayout());
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        terminado = false;
 
         panelIzquierdo = new JPanel(new BorderLayout());
         panelIzquierdo.setBorder(BorderFactory.createLineBorder(Color.GRAY));
@@ -50,12 +52,14 @@ public class CarWashGUI {
         panelControl.setOpaque(true);
         panelControl.setBorder(BorderFactory.createLineBorder(Color.GRAY));
 
+        //Espaciado entre elementos
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 1;
         gbc.gridy = 2;
         gbc.insets = new Insets(10,5,10,5);
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
+        //Botón acelerar
         botonAceleracion = new JButton("Acelerar");
         botonAceleracion.addActionListener(_ -> botonAceleracion());
         botonAceleracion.setFocusPainted(false);
@@ -63,6 +67,15 @@ public class CarWashGUI {
         botonAceleracion.setOpaque(true);
         botonAceleracion.setBackground(new Color(236,234,227));
 
+        //Botón terminar
+        botonTerminar = new JButton("Terminar");
+        botonTerminar.addActionListener(_ -> botonTerminar());
+        botonTerminar.setFocusPainted(false);
+        botonTerminar.setPreferredSize(new Dimension(90,20));
+        botonTerminar.setOpaque(true);
+        botonTerminar.setBackground(new Color(236,234,227));
+
+        //Hora
         labelTiempo = new JLabel("8:00", SwingConstants.CENTER);
         labelTiempo.setOpaque(true);
         labelTiempo.setPreferredSize(new Dimension(70,20));
@@ -73,12 +86,11 @@ public class CarWashGUI {
         secado = new ArrayList<>(5);
         aspirado = new ArrayList<>(4);
 
-        //Inicializar el arrayList interior de aspirado que corresponde a la cantidad de elementos(JLabels en cada elemento
-        // de aspirado)
         for (int i = 0; i < 4; ++i) {
             aspirado.add(new ArrayList<>(4));
         }
 
+        //Ciclos donde se configura cada label para luego poder meter la información de los vehiculos ahí
         //Ciclo para acceso
         for (int i = 0; i < 10; ++i) {
             JLabel labelVehiculo = new JLabel(String.valueOf(i),  SwingConstants.CENTER);
@@ -126,6 +138,7 @@ public class CarWashGUI {
 
 
 
+        //Por cada Jlabel, se mete al panel especifico con su espaciado entre componentes
         for (int i = 0;i < acceso.size(); ++i) {
             panelAcceso.add(acceso.get(i), gbc);
             ++gbc.gridx;
@@ -154,6 +167,7 @@ public class CarWashGUI {
             gbc.gridx = 0;
         }
 
+        //Para le vehiculo próximoa a meter
         gbc.gridx = 0;
         vehiculoActual = new JLabel("0", SwingConstants.CENTER);
         vehiculoActual.setOpaque(true);
@@ -161,10 +175,12 @@ public class CarWashGUI {
         vehiculoActual.setBackground(Color.WHITE);
         vehiculoActual.setPreferredSize(new Dimension(60,60));
 
+        //Area de paneles donde y titulos de cada uno, se meten los componentes elaborados en esta sección
         panelEsperaAcceso.add(vehiculoActual, gbc);
 
         panelControl.add(labelTiempo);
         panelControl.add(botonAceleracion);
+        panelControl.add(botonTerminar);
 
         panelIzquierdoEAST = new JPanel(new BorderLayout());
         panelIzquierdoWEST = new JPanel(new BorderLayout());
@@ -194,6 +210,7 @@ public class CarWashGUI {
         panelDerecho.add(labelTituloServicio, BorderLayout.NORTH);
         panelDerecho.add(panelAspiradoSecado, BorderLayout.CENTER);
 
+        //Se meten todos los paneles al frame y se da la configuración final del panel
         frame.add(panelControl, BorderLayout.NORTH);
         frame.add(panelIzquierdo, BorderLayout.WEST);
         frame.add(panelCentral, BorderLayout.CENTER);
@@ -213,7 +230,7 @@ public class CarWashGUI {
 
         //Ciclos anidados y Threads que hacen posible la simulación.
         //Primer ciclo corresponde a horas(que en realidad son minutos en la simulacion)
-        //Segundo ciclo corresponde a minutos(que en realdia son soegundos en la simulacion)
+        //Segundo ciclo corresponde a minutos(que en realidad son segundos en la simulacion)
         //Luego el Thread de 1000 milisegundos que corresponde a un segundo.
         int max = 10;
         for (int i = 0; i < max; ++i) {
@@ -225,7 +242,10 @@ public class CarWashGUI {
                 }
 
                 try {
-                    Thread.sleep(carWash.getAceleracion());
+                    if (!terminado) {
+                        Thread.sleep(carWash.getAceleracion());
+                    }
+
 
                     boolean lineaEstado = false;
 
@@ -237,6 +257,7 @@ public class CarWashGUI {
                         }
                     }
 
+                    //Se verifican casos para saber si ya se acabará la simulación
                     if (i >= 9 && (carWash.getAcceso().lineaVacia() && carWash.getLavado().lineaVacia() && carWash.getSecado().lineaVacia() && !lineaEstado)) {
                         break;
                     } else if (i == (max-1) && j == 59 && (!carWash.getAcceso().lineaVacia() || !carWash.getLavado().lineaVacia() || !carWash.getSecado().lineaVacia() || lineaEstado)) {
@@ -257,6 +278,8 @@ public class CarWashGUI {
                     System.out.println("Error en hilo del segundo: " + (j+1));
                 }
             }
+
+            //Se verifica con este ciclo si todas las colas aspirados están vacias
             boolean lineaEstado = false;
             for (ColaVehiculo aspiradoInd : carWash.getAspirado()) {
 
@@ -269,15 +292,14 @@ public class CarWashGUI {
                 break;
             }
         }
+        //Una vez ya terminados los ciclos anidados(es decir la simulación) se procede a mostrar el registro de los carros
         registroGrafico();
 
     }
 
-    private void generadorElementoVehiculoFrame()
-    {
-
-    }
-
+    /**
+     * Método que permite cambiar la aceleración de la simulación
+     */
     private void botonAceleracion()
     {
         if (carWash.getAceleracion() == 100) {
@@ -288,6 +310,17 @@ public class CarWashGUI {
         System.out.println(carWash.getAceleracion());
     }
 
+    /**
+     * Método para terminar la simulación y pasar a lo final
+     */
+    private void botonTerminar()
+    {
+       terminado = true;
+    }
+
+    /**
+     * Método encargado de actualizar las colas en lo gráfico para que se sincronicen bien
+     */
     private void actualizaColasGraficas()
     {
         //Se obtiene las colas de la clase lógica del carWash
@@ -305,8 +338,11 @@ public class CarWashGUI {
             aspiradoTemp.add(new ColaVehiculo(4));
         }
 
+        //Ciclo para determinar a que JLabel se le metará información del vehiculo existente
         for (int i = this.acceso.size()-1; i >= 0; --i) {
 
+            //Si la linea no está vacia entonces se procede a sacar un peek de acceso y se crea un vehiculoClon para no referenciar el de peek y hacer
+            //un cambio inesperado
             if (!acceso.lineaVacia()) {
                 Vehiculo vehiculoTemp = acceso.peek();
                 Vehiculo vehiculoClon = new Vehiculo(vehiculoTemp.getTamanio(), vehiculoTemp.getTipoServicio(), vehiculoTemp.isPreferencia(), vehiculoTemp.getMarca(), vehiculoTemp.getColor());
@@ -317,6 +353,9 @@ public class CarWashGUI {
                 labelActual.setText("<html>" + vehiculoClon.getMarca() + "<br>" + vehiculoClon.getTamanio() + "<br>" + "Pref: " + vehiculoClon.isPreferencia() + "</html>");
                 labelActual.setBackground(asignarColor(vehiculoClon.getColor()));
                 accesoTemp.insertar(acceso.eliminar());
+
+                //En dado caso que este vacia acceso, simplemente se cambia al JLabel preterminado que se configuro en el constructor
+                //Para no dejar un carro como residuo de no haber actualizado los gráfico
             } else {
 
                 JLabel labelActual = this.acceso.get(i);
@@ -356,6 +395,11 @@ public class CarWashGUI {
                 labelActual.setText(String.valueOf(i));
                 labelActual.setBackground(Color.WHITE);
             }
+            if (lavadoTemp.lineaLlena()) {
+                panelCentral.setBackground(new Color(255,105,97));
+            } else {
+                panelCentral.setBackground(backGroundBASE);
+            }
         }
 
         while (!lavadoTemp.lineaVacia()) {
@@ -380,6 +424,11 @@ public class CarWashGUI {
                 labelActual.setFont(new Font("Arial", Font.BOLD,12));
                 labelActual.setText(String.valueOf(i));
                 labelActual.setBackground(Color.WHITE);
+            }
+            if (secadoTemp.lineaLlena()) {
+                panelDerecho.setBackground(new Color(255,105,97));
+            } else {
+                panelDerecho.setBackground(backGroundBASE);
             }
         }
         while (!secadoTemp.lineaVacia()) {
@@ -408,6 +457,11 @@ public class CarWashGUI {
                     labelActual.setFont(new Font("Arial", Font.BOLD,12));
                     labelActual.setText(String.valueOf(j));
                     labelActual.setBackground(Color.WHITE);
+                }
+                if (aspiradoTemp.get(i).lineaLlena()) {
+                    panelDerecho.setBackground(new Color(255,105,97));
+                } else {
+                    panelDerecho.setBackground(backGroundBASE);
                 }
             }
         }
@@ -441,6 +495,9 @@ public class CarWashGUI {
 
     }
 
+    /**
+     * Método para crear el registro gráfico
+     */
     private void registroGrafico()
     {
         JPanel panelRegistro = new JPanel();
@@ -471,6 +528,11 @@ public class CarWashGUI {
 
     }
 
+    /**
+     * Método que regresa el color en función del parametro colorS
+     * @param colorS
+     * @return
+     */
     private Color asignarColor(String colorS)
     {
         Color color = null;

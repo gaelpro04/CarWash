@@ -1,5 +1,7 @@
+//Clase que simula un vehiculo del sistema de lavado
 public class Vehiculo {
 
+    //Atributos que lo componen
     private String tamanio;
     private String tipoServicio;
     private boolean preferencia;
@@ -10,6 +12,15 @@ public class Vehiculo {
     private int horaLlegadaInt;
     private int horaSalidaInt;
 
+
+    /**
+     * Constructor preterminado donde se necesita de sus características para poder ser instanciado
+     * @param tamanio
+     * @param tipoServicio
+     * @param preferencia
+     * @param marca
+     * @param color
+     */
     public Vehiculo(String tamanio, String tipoServicio, boolean preferencia, String marca, String color)
     {
         this.tamanio = tamanio;

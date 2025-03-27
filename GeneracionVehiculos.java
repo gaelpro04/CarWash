@@ -1,26 +1,38 @@
 import java.util.Random;
 
+//Clase que modela la generación de vehiculos con probabilidad especifica.
 public class GeneracionVehiculos {
 
+    //Atributos de la clase donde se harán los bancos de datos
     private Random rd;
     private String[] color;
     private String[] marca;
     private String[] tamanio;
     private String[] tipoServicio;
-    private boolean[] preferencia;
 
+    /**
+     * Constructor preterminado donde se inicializan y crean los bancos de datos y Random
+     */
     public GeneracionVehiculos()
     {
+        //Atributos con elementos arbitrarios asignados
         color = new String[]{"Azul", "Verde", "Rojo", "Amarillo", "Blanco", "Rosa", "Gris", "Naranja"};
         marca = new String[]{"Honda", "Toyota", "Sentra", "Chevrolet", "Kia", "Ford", "Hyundai", "Mitsubishi"};
+
+        //Atributos con elementos especificados por la prática
         tamanio = new String[]{"Pequeño", "Mediano", "Grande"};
         tipoServicio = new String[]{"Aspirado", "Secado"};
-        preferencia = new boolean[]{true,false};
+
         rd = new Random();
     }
 
+    /**
+     * Método que genera un vehiculo de acuerdo a ciertas probabilidades o aleatoriamiete
+     * @return
+     */
     public Vehiculo generarVehiculo()
     {
+        //Se inicializan algunas variables donde se almacenará las características generadas
         String color;
         String marca;
         String tamanio;
@@ -59,6 +71,8 @@ public class GeneracionVehiculos {
         } else {
             preferencia = true;
         }
+
+        //Por utlimo se regresa el vehiculo con las características generadas
         return new Vehiculo(tamanio, tipoServicio, preferencia, marca, color);
     }
 

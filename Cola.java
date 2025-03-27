@@ -1,8 +1,13 @@
+//Método que simula la estructura de datos cola circular
 public class Cola<T> {
 
+    //Atributos esenciales para el funcionamiento de la clase
     private T[] cola;
     private int inicio, fin;
 
+    /**
+     * Constructor preterminado, donde es vacio y se da un tamaño especifico preterminado
+     */
     public Cola()
     {
         cola = (T[]) new Object[1000];
@@ -10,6 +15,10 @@ public class Cola<T> {
         fin = -1;
     }
 
+    /**
+     * Constructor donde se especifica la cantidad de elementos que puede tener la cola
+     * @param MAX
+     */
     public Cola(int MAX)
     {
         cola = (T[]) new Object[MAX];
@@ -17,16 +26,28 @@ public class Cola<T> {
         fin = -1;
     }
 
+    /**
+     * Método para saber si la cola está llena
+     * @return
+     */
     public boolean colaLena()
     {
         return (fin + 1) % cola.length == inicio;
     }
 
+    /**
+     * Método para saber si la cola esta vacia
+     * @return
+     */
     public boolean colaVacia()
     {
         return inicio == -1;
     }
 
+    /**
+     * Método para insertar elementos a la cola
+     * @param object
+     */
     public void insertar(T object)
     {
         if (colaLena()) {
@@ -44,6 +65,10 @@ public class Cola<T> {
         }
     }
 
+    /**
+     * Método para sacar elementos de la cola
+     * @return
+     */
     public T eliminar()
     {
         T dato = null;
@@ -65,6 +90,10 @@ public class Cola<T> {
         return dato;
     }
 
+    /**
+     * Método para regresar el siguiente elemento a ser sacado sin eliminarlo
+     * @return
+     */
     public T peek()
     {
         if (inicio == -1) {
@@ -73,6 +102,10 @@ public class Cola<T> {
         }
         return cola[inicio];
     }
+
+    /**
+     * Método para mostrar los elementos actuales de la cola
+     */
     public void mostrar()
     {
         if (inicio == -1) {
@@ -85,6 +118,10 @@ public class Cola<T> {
         }
     }
 
+    /**
+     * Método que regresa el tamaño actual de la cola
+     * @return
+     */
     public int tamanio()
     {
         if (colaVacia()) {

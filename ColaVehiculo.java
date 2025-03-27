@@ -1,16 +1,28 @@
+//Clase que modela la cola de vehiculos(Importante para la clase CarWash)
 public class ColaVehiculo {
 
-    Cola<Vehiculo> colaVehiculo;
+    //Atributo donde se almacenarán los vehiculos
+    private Cola<Vehiculo> colaVehiculo;
 
+    /**
+     * Constructor preterminado
+     */
     public ColaVehiculo()
     {
         colaVehiculo = new Cola<>(10);
     }
 
+    /**
+     * Constructor con parametro de la cantidad máxima de elementos de la cola de vehiculos
+     * @param MAX
+     */
     public ColaVehiculo(int MAX)
     {
         colaVehiculo = new Cola<>(MAX);
     }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //Métodos de la clase Cola pero sobreescritos para esta clase
 
     public void insertar(Vehiculo vehiculo)
     {
