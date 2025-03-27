@@ -145,7 +145,7 @@ public class CarWash {
 
                 //Por utlimo se genera un nuevo numero y el contador se reinicia, además se genera otro vehiculo pero se alamcenará
                 //hasta que llegue al tiempo indicado y haya espacio en el acceso
-                this.numeroGenerado = rd.nextInt(7) + 2;
+                this.numeroGenerado = rd.nextInt(8) + 2;
                 contadorDeNumeroGenerado = 0;
                 this.vehiculo = generarVehiculo();
 
@@ -158,7 +158,7 @@ public class CarWash {
         } else {
             //Si el número generado es cero(primera iteración) entonces se genera un vehiculo y se asigna un numerto generado
             if (numeroGenerado == 0) {
-                this.numeroGenerado = rd.nextInt(7) + 2;
+                this.numeroGenerado = rd.nextInt(8) + 2;
                 this.vehiculo = generarVehiculo();
             }
 
